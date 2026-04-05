@@ -1,74 +1,16 @@
 from machine import Pin, ADC
 import time
 import math
-import network
-import ntptime
 
-# WiFi credentials
-SSID = ""
-PASSWORD = ""
+# No WiFi in this version — timestamps are seconds elapsed since boot
 
 # Thermistor configuration
 SERIES_RESISTOR = 10      # kΩ value of your fixed resistor
 NOMINAL_RESISTANCE = 10   # kΩ thermistor resistance at 25°C
 B_COEFFICIENT = 3950      # Beta coefficient of thermistor
 
-# UTC offset in seconds — BST = 3600, GMT = 0
-UTC_OFFSET = 3600
-
 adc = ADC(26)
 led = Pin("LED", Pin.OUT)
-
-
-def connect_wifi():
-    """
-    Connect to WiFi using provided SSID and PASSWORD.
-
-    Returns:
-        wlan (network.WLAN): Connected WLAN object
-
-    Raises:
-        RuntimeError: If connection fails within the timeout period
-
-    Notes:
-        - LED is ON while connecting
-        - LED blinks rapidly if connection fails
-        - Timeout duration can be adjusted in the loop below
-    """
-    wlan = network.WLAN(network.STA_IF)
-    wlan.active(True)
-    wlan.connect(SSID, PASSWORD)
-    led.on()
-
-    for _ in range(20):  # Seconds to wait (adjustable)
-        if wlan.isconnected():
-            led.off()
-            return wlan
-        time.sleep(1)
-
-    led.off()
-    for _ in range(10):
-        led.toggle()
-        time.sleep(0.1)
-
-    raise RuntimeError("WiFi connection failed")
-
-
-def sync_time(wlan):
-    """
-    Synchronise system time using NTP, then disable WiFi to save power.
-
-    Args:
-        wlan (network.WLAN): Active WLAN connection
-
-    Notes:
-        - Syncs to UTC via ntptime
-        - UTC_OFFSET is applied separately in get_timestamp()
-        - WiFi is disabled after sync to reduce power draw
-    """
-    ntptime.settime()
-    wlan.disconnect()
-    wlan.active(False)
 
 
 def read_temp():
@@ -99,19 +41,16 @@ def read_temp():
 
 def get_timestamp():
     """
-    Generate a formatted timestamp adjusted for local timezone.
+    Return seconds elapsed since boot as a timestamp.
 
     Returns:
-        str: Timestamp in format 'YYYY-MM-DD HH:MM:SS'
+        str: Seconds since boot
 
     Notes:
-        - Based on UTC time synced via NTP
-        - Adjust UTC_OFFSET at the top of the file for your timezone
+        - No real-world clock without WiFi/NTP
+        - Use the wireless version for wall-clock timestamps
     """
-    t = time.localtime(time.time() + UTC_OFFSET)
-    return "{:04}-{:02}-{:02} {:02}:{:02}:{:02}".format(
-        t[0], t[1], t[2], t[3], t[4], t[5]
-    )
+    return str(time.time())
 
 
 def init_log_file():
@@ -124,7 +63,7 @@ def init_log_file():
     """
     try:
         with open("temps.csv", "x") as f:
-            f.write("timestamp,temperature\n")
+            f.write("seconds_since_boot,temperature\n")  # reflects actual column content
     except:
         pass
 
@@ -146,14 +85,6 @@ def log_temperature(temp):
     print(timestamp, temp)
 
 
-wlan = connect_wifi()
-
-for _ in range(3):
-    led.toggle()
-    time.sleep(0.5)
-led.off()
-
-sync_time(wlan)
 init_log_file()
 
 # Main loop
