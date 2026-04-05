@@ -1,7 +1,6 @@
-# PicoTemperatureLogger
-This is a MicroPython script that works on the raspberry pi pico to continuously record data and write to a csv file.
+# Raspberry Pi Pico Temperature Data Logger
+
 <img width="593" height="425" alt="image" src="https://github.com/user-attachments/assets/6c3c501a-4a15-4cdc-b015-4651fd67964a" />
-# 📊 Raspberry Pi Pico Temperature Data Logger
 
 A simple, low-cost temperature logging system built using a Raspberry Pi Pico (or Pico W) and a thermistor.
 This project records temperature readings at regular intervals and saves them to a CSV file for later analysis.
@@ -20,7 +19,7 @@ Parts used:
 
 ---
 
-# ⚙️ How It Works
+# How It Works
 
 1. The thermistor forms a voltage divider with a fixed resistor.
 2. The Pico reads the voltage using its ADC (Analog-to-Digital Converter).
