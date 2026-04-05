@@ -55,7 +55,7 @@ Adjust these if:
 
 ---
 
-### ⏱️ Logging Interval
+### Logging Interval
 
 ```python
 time.sleep(59)
