@@ -81,7 +81,7 @@ time.time() + 3600
 
 ---
 
-### 📶 WiFi Credentials (Wireless Version Only)
+### WiFi Credentials (Wireless Version Only)
 
 ```python
 SSID = "your_wifi"
